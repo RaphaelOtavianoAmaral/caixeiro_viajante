@@ -5,8 +5,8 @@ from random import *
 
 
 class AntColonySystem:
-    numAnts = 10
-    numIterations = 100
+    numAnts = 10 # número de formigas
+    numIterations = 100 # número de caminhos que cada formiga fará
     a = 0.1  # alpha
     b = 2  # beta
     q0 = 0.9
@@ -64,11 +64,13 @@ class AntColonySystem:
                 result[i][j] = self.distance(i, j)
         return result
 
+    # define a distância euclidiana entre duas cidades i e j
     def distance(self, i, j):
         return math.sqrt(
             math.pow(self.cityLocations[j][0]-self.cityLocations[i][0], 2) +
             math.pow(self.cityLocations[j][1]-self.cityLocations[i][1], 2))
 
+    # retorna a cidade mais próxima e não-visitada
     def closestNotVisited(self, loc, visited):
         minimum = math.inf
         result = None
@@ -78,14 +80,17 @@ class AntColonySystem:
                 result = city
         return result
 
+    # atualiza trilha  de feromônio entre i e j
     def localTrailUpdate(self, i, j):
         self.pheromone[j][i] = self.pheromone[i][j] = (1-self.a) * self.pheromone[i][j] + self.a * self.tau
 
+    # atualiza feromônio de todas as arestas
     def globalTrailUpdate(self):
         for i in range(self.size):
             for j in range(i + 1, self.size):
                 self.pheromone[i][j] = self.pheromone[j][i] = (1-self.a)*self.pheromone[i][j] + self.a * self.bestTour[i][j] / self.bestTourLength
 
+    # retorna a próxima cidade que a formiga deve visitar
     def nextCity(self, ant, loc, visited):
         result = None
         q = np.random.random_sample()
@@ -117,12 +122,14 @@ class AntColonySystem:
                         if s > R:
                             return city
 
+    # retorna o nível de atração da aresta i,j
     def attraction(self, i, j):
         if i != j:
             return self.pheromone[i][j] / (math.pow(self.costs[i][j], self.b))
         else:
             return 0
 
+    # retorna a duração do passeio vizinho mais próximo
     def lengthNearestNeighbour(self):
         start = randint(0, self.size-1)
         current = start
@@ -144,6 +151,7 @@ class AntColonySystem:
         length += self.costs[current][start]
         return length
 
+    # Retorna o melhor passeio como uma lista de cidades na ordem em que são visitadas
     def bestTourList(self):
         current = 0
         previous = 0
