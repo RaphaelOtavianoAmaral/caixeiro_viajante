@@ -57,8 +57,11 @@ class AntColonySystem:
         print('Tem um tamanho de: ', self.bestTourLength )
         print('Encontrado em ', T2 - T1, ' segundos')
 
+    # cria uma matriz de custos
     def createCostMatrix(self, cityLocations):
+        # cria uma matriz quadrada size x size, preenchida com zeros
         result = np.zeros((self.size, self.size))
+        # preenche toda a matriz com as distâncias entre os vértices
         for i in range(self.size):
             for j in range(self.size):
                 result[i][j] = self.distance(i, j)
@@ -129,25 +132,43 @@ class AntColonySystem:
         else:
             return 0
 
-    # retorna a duração do passeio vizinho mais próximo
+    # retorna o custo toal do percurso, escolhendo sempre o vizinho mais próximo
     def lengthNearestNeighbour(self):
+        # define o vértice inicial como um aleatório entre todos
         start = randint(0, self.size-1)
+        # define o atual como o inicial
         current = start
+        # retorna um array de visitados, todos como false
         visited = np.zeros(self.size, dtype=bool)
+        # inicia o percurso já com o vértice atual (inicial)
         tour = [current]
+        # inicia tamanho do percurso como 0
         length = 0
+        # para cada vértice na posição i
         for i in range(self.size-1):
+            # seta o vértice como visitado
             visited[current] = True
+            # marca o custo mínimo como infinito
             minimum = math.inf
+            # marca o mais próximo como indefinido
             closest = None
+            # para cada vértice j, diferente de i
             for i in range(self.size):
+                # se não foi visitado e o custo é menos do que o mínimo
                 if (not visited[i]) and (self.costs[current][i] < minimum):
+                    # mínimo será a distancia (custo) do vértice i para j
                     minimum = self.costs[current][i]
+                    # o mais próximo será este vértice
                     closest = i
+            # insere o vértice mais próximo no percurso
             tour.append(closest)
+            # soma o custo do mínimo ao custo total do percurso
             length += minimum
+            # marca o vértice mais próximo como o atual
             current = closest
+        # no fim, o caixeiro volta para o ponto de partida
         tour.append(start)
+        # e é acrescentado ao custo total, o custo do penúltimo vértice para o vértice inicial e retona o custo total
         length += self.costs[current][start]
         return length
 
